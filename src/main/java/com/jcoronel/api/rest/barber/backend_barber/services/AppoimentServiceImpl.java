@@ -69,10 +69,10 @@ public class AppoimentServiceImpl implements AppoimentService {
             servicesRequest.forEach(sr -> {
                 System.out.println(servicesAppoimentBD);
                 if (servicesAppoimentBD.containsKey(sr.getId())) {
-                    System.out.printf("hola entro en la validacion");
                     servicesAppoimentBD.get(sr.getId()).setAmount(sr.getAmount());
                 }else{
-                    System.out.println("AGREGAR NUEVO SERVICIO");
+                    //crear un dto ?
+                    //servicesAppoimentBD.put(sr.getId(),new ApsEntity());
                 }
             });
 
