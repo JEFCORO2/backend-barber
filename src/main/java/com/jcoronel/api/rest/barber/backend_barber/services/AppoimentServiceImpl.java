@@ -20,6 +20,7 @@ import com.jcoronel.api.rest.barber.backend_barber.entities.ApsEntity;
 import com.jcoronel.api.rest.barber.backend_barber.entities.Client;
 import com.jcoronel.api.rest.barber.backend_barber.entities.ServiceEntity;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.AppoimentRepository;
+import com.jcoronel.api.rest.barber.backend_barber.repositories.AppoimentServiceRepository;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.ClientRepository;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.ServiceRepository;
 
@@ -36,6 +37,9 @@ public class AppoimentServiceImpl implements AppoimentService {
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private AppoimentServiceRepository apsRepository;
 
     @Override
     public List<Appoiment> findAll() {
@@ -67,12 +71,15 @@ public class AppoimentServiceImpl implements AppoimentService {
                     ));
 
             servicesRequest.forEach(sr -> {
-                System.out.println(servicesAppoimentBD);
                 if (servicesAppoimentBD.containsKey(sr.getId())) {
                     servicesAppoimentBD.get(sr.getId()).setAmount(sr.getAmount());
                 }else{
-                    //crear un dto ?
-                    //servicesAppoimentBD.put(sr.getId(),new ApsEntity());
+                    //validar si existe el servicio
+                    //que pasaria con los servicios que ya no estan en el json
+                    ServiceEntity serviceBD = serviceRepository.findById(sr.getId()).get();
+                    ApsEntity newApsEntity = new ApsEntity(appoimentResponse,serviceBD,sr.getAmount());
+                    apsRepository.save(newApsEntity);
+                    appoimentResponse.getAppoimentService().add(newApsEntity);
                 }
             });
 
