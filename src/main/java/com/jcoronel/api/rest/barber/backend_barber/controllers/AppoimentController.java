@@ -73,7 +73,7 @@ public class AppoimentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAppoiment(@Valid @RequestBody AppoimentUpdateDto appoiment, BindingResult result,
+    public ResponseEntity<?> updateAppoiment(@RequestBody AppoimentUpdateDto appoiment, BindingResult result,
                                              @PathVariable Long id) {
 
         Optional<Appoiment> appoimentOptional = service.update(id, appoiment);

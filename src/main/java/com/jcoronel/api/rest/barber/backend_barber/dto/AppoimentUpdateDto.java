@@ -11,6 +11,9 @@ public class AppoimentUpdateDto {
     private Integer client;
     private List<ServiceItemDto> services;
 
+    public AppoimentUpdateDto() {
+    }
+
     public AppoimentUpdateDto(LocalDateTime date, Integer client, List<ServiceItemDto> services) {
         this.date = date;
         this.client = client;
@@ -27,6 +30,18 @@ public class AppoimentUpdateDto {
 
     public Integer getclient() {
         return client;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public void setClient(Integer client) {
+        this.client = client;
+    }
+
+    public void setServices(List<ServiceItemDto> services) {
+        this.services = services;
     }
 
     @Override

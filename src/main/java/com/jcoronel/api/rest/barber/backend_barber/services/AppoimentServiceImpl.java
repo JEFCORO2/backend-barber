@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentUpdateDto;
 import com.jcoronel.api.rest.barber.backend_barber.dto.ServiceItemDto;
 import com.jcoronel.api.rest.barber.backend_barber.exceptions.ServiceNotFoundException;
+import com.jcoronel.api.rest.barber.backend_barber.repositories.AppoimentServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import com.jcoronel.api.rest.barber.backend_barber.entities.ApsEntity;
 import com.jcoronel.api.rest.barber.backend_barber.entities.Client;
 import com.jcoronel.api.rest.barber.backend_barber.entities.ServiceEntity;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.AppoimentRepository;
+import com.jcoronel.api.rest.barber.backend_barber.repositories.AppoimentServiceRepository;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.ClientRepository;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.ServiceRepository;
 
@@ -36,6 +39,9 @@ public class AppoimentServiceImpl implements AppoimentService {
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private AppoimentServiceRepository apsRepository;
 
     @Override
     public List<Appoiment> findAll() {
@@ -56,29 +62,44 @@ public class AppoimentServiceImpl implements AppoimentService {
         if (citaOptional.isPresent()) {
             Appoiment appoimentResponse = citaOptional.get();
 
-            //Listado de servicios del request
-            List<ServiceItemDto> servicesRequest = a.getServices();
+            appoimentResponse.setDate(a.getDate());
 
-            Map<Long, ApsEntity> servicesAppoimentBD = appoimentResponse.getAppoimentService()
-                    .stream()
-                    .collect(Collectors.toMap(
-                            aps -> aps.getService().getId(),
-                            aps -> aps
-                    ));
+            if (!appoimentResponse.getAppoimentService().isEmpty()) {
+                // Listado de servicios del request
+                List<ServiceItemDto> servicesRequest = a.getServices();
 
-            servicesRequest.forEach(sr -> {
-                System.out.println(servicesAppoimentBD);
-                if (servicesAppoimentBD.containsKey(sr.getId())) {
-                    servicesAppoimentBD.get(sr.getId()).setAmount(sr.getAmount());
-                }else{
-                    //crear un dto ?
-                    //servicesAppoimentBD.put(sr.getId(),new ApsEntity());
-                }
-            });
+                //Set de ids unicos de los serivicios del request
+                Set<Long> idsRequest = servicesRequest.stream().map(ids -> ids.getId()).collect(Collectors.toSet());
+
+                // Set de ids unicos con set de la bd por cita
+                Set<Long> idsServicesEliminar = appoimentResponse.getAppoimentService()
+                        .stream()
+                        .filter(ids -> !(idsRequest.contains(ids.getService().getId())))
+                        .map(ids -> ids.getId())
+                        .collect(Collectors.toSet());
+
+                Map<Long, ApsEntity> servicesAppoimentBD = appoimentResponse.getAppoimentService()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                aps -> aps.getService().getId(),
+                                aps -> aps));
+
+                servicesRequest.forEach(sr -> {
+                    if (servicesAppoimentBD.containsKey(sr.getId())) {
+                        servicesAppoimentBD.get(sr.getId()).setAmount(sr.getAmount());
+                    } else {
+                        ServiceEntity serviceBD = serviceRepository.findById(sr.getId()).get();
+                        ApsEntity newApsEntity = new ApsEntity(appoimentResponse, serviceBD, sr.getAmount());
+                        appoimentResponse.getAppoimentService().add(newApsEntity);
+                    }
+                });
+
+                appoimentResponse.getAppoimentService().removeIf(ids -> idsServicesEliminar.contains(ids.getId()));
+            }
 
             return Optional.of(appoimentResponse);
         }
-        return null;
+        return citaOptional;
     }
 
     @Override
