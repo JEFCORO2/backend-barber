@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentCreateDto;
+import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentResponseDto;
 import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentUpdateDto;
 import com.jcoronel.api.rest.barber.backend_barber.dto.ServiceItemDto;
 import com.jcoronel.api.rest.barber.backend_barber.exceptions.ServiceNotFoundException;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.AppoimentServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.jcoronel.api.rest.barber.backend_barber.entities.Appoiment;
@@ -22,7 +22,6 @@ import com.jcoronel.api.rest.barber.backend_barber.entities.ApsEntity;
 import com.jcoronel.api.rest.barber.backend_barber.entities.Client;
 import com.jcoronel.api.rest.barber.backend_barber.entities.ServiceEntity;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.AppoimentRepository;
-import com.jcoronel.api.rest.barber.backend_barber.repositories.AppoimentServiceRepository;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.ClientRepository;
 import com.jcoronel.api.rest.barber.backend_barber.repositories.ServiceRepository;
 
@@ -108,11 +107,6 @@ public class AppoimentServiceImpl implements AppoimentService {
         return hoy.getMonth().equals(mesCita.getMonth());
     }
 
-//    @Override
-//    public List<Appoiment> findAll() {
-//        return List.of();
-//    }
-
     @Override
     public Appoiment saveAppoiment(Appoiment a) {
 
@@ -142,5 +136,45 @@ public class AppoimentServiceImpl implements AppoimentService {
         a.setAppoimentService(listServicesRest);
 
         return appoimentRepository.save(a);
+    }
+
+    @Override
+    public AppoimentResponseDto saveAppoimentDto(AppoimentCreateDto a) {
+
+        Appoiment newAppoiment = new Appoiment();
+        List<ApsEntity> newListServices = new ArrayList<>();
+
+        //validar existencia de cliente
+        //crear exepcion personalizada si no existe cliente
+        Client clientRequest = clientRepository.findById(a.getClientId()).get();
+
+        //te quedaria validar al cliente y los servicios
+        newAppoiment.setDate(a.getDate());
+        newAppoiment.setClient(clientRequest);
+
+        //crear la cita para generar el id
+
+        //listado servicios
+        a.getServices().forEach(aps -> {
+            ApsEntity newAps = new ApsEntity();
+            ServiceEntity serviceRequest = serviceRepository.findById(aps.getId()).get();
+
+            newAps.setAppoiment(newAppoiment);
+            newAps.setService(serviceRequest);
+            newAps.setAmount(aps.getAmount());
+
+            newListServices.add(newAps);
+        });
+
+        newAppoiment.setAppoimentService(newListServices);
+        appoimentRepository.save(newAppoiment);
+
+        AppoimentResponseDto appoimentResponseDto = new AppoimentResponseDto();
+        appoimentResponseDto.setId(newAppoiment.getId());
+        appoimentResponseDto.setClientId(newAppoiment.getClient().getId());
+        appoimentResponseDto.setDate(newAppoiment.getDate());
+        appoimentResponseDto.setServices(a.getServices());
+
+        return appoimentResponseDto;
     }
 }

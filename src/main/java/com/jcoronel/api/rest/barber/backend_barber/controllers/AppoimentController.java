@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentCreateDto;
+import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentResponseDto;
 import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentUpdateDto;
 import com.jcoronel.api.rest.barber.backend_barber.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,60 +60,51 @@ public class AppoimentController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Appoiment>> createAppoiment(@Valid @RequestBody Appoiment appoiment,
-            BindingResult result) {
-
-        Map<String, String> errors = validation(result, appoiment);
-
-        if (!errors.isEmpty() || result.hasFieldErrors() || appoiment.getClient().getId() == null) {
-
-            return ResponseEntity.badRequest().body(new ApiResponse<>(HttpStatus.BAD_REQUEST.value(),
-                    "errores en la peticion", null, errors));
-        }
-        return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.ACCEPTED.value(),
-                "enviado Correctamente", service.saveAppoiment(appoiment), validation(result, appoiment)));
+    public ResponseEntity<AppoimentResponseDto> createAppoiment(@Valid @RequestBody AppoimentCreateDto appoiment) {
+        return ResponseEntity.ok().body(service.saveAppoimentDto(appoiment));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateAppoiment(@RequestBody AppoimentUpdateDto appoiment, BindingResult result,
-                                             @PathVariable Long id) {
+//    @PutMapping("/{id}")
+//    public ResponseEntity<ApiResponse<Appoiment>> updateAppoiment(@RequestBody AppoimentUpdateDto appoiment, BindingResult result,
+//                                             @PathVariable Long id) {
+//
+//        Optional<Appoiment> appoimentOptional = service.update(id, appoiment);
+//
+//        if (appoimentOptional.isPresent()) {
+//            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(HttpStatus.ACCEPTED.value(),
+//                    "actualizado correctamente", service.update(id, appoiment), validation(result,appoiment)));
+//        }
+//
+//        return ResponseEntity.badRequest().body(Map.of("error", "La cita con id, " + id + " no existe"));
+//    }
 
-        Optional<Appoiment> appoimentOptional = service.update(id, appoiment);
-
-        if (appoimentOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(appoimentOptional.orElseThrow());
-        }
-
-        return ResponseEntity.badRequest().body(Map.of("error", "La cita con id, " + id + " no existe"));
-    }
-
-    private Map<String, String> validation(BindingResult result, Appoiment appoiment) {
-        Map<String, String> errors = new HashMap<>();
-
-        if (!locationService.validaHorarioAtencion(1,appoiment.getDate().toLocalTime())) {
-            errors.put("location.hour", "la hora no es valida, escoje otra dentro del rango");
-        }
-
-        if (!service.validarMesActual(appoiment.getDate())) {
-            errors.put("appoiment.month", "solo puedes sacar cita en el mes actual");
-        }
-
-        if (appoiment.getClient() == null || appoiment.getClient().getId() == null) {
-            result.rejectValue("client.id", "client.id.null", "no puede ser nulo o debe tener un id");
-        }
-
-/*        if (appoiment.getAppoimentService() == null) {
-            result.rejectValue("appoiment.service", "services.null", "deberia tener servicios asociados");
-        }*/
-
-        if (!clientService.isFoundClient(appoiment.getClient().getId())) {
-            errors.put("client.id", "no existe cliente con el id : " + appoiment.getClient().getId());
-        }
-
-        result.getFieldErrors().forEach(err -> {
-            errors.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
-        });
-
-        return errors;
-    }
+//    private Map<String, String> validation(BindingResult result, Appoiment appoiment) {
+//        Map<String, String> errors = new HashMap<>();
+//
+//        if (!locationService.validaHorarioAtencion(1,appoiment.getDate().toLocalTime())) {
+//            errors.put("location.hour", "la hora no es valida, escoje otra dentro del rango");
+//        }
+//
+//        if (!service.validarMesActual(appoiment.getDate())) {
+//            errors.put("appoiment.month", "solo puedes sacar cita en el mes actual");
+//        }
+//
+//        if (appoiment.getClient() == null || appoiment.getClient().getId() == null) {
+//            result.rejectValue("client.id", "client.id.null", "no puede ser nulo o debe tener un id");
+//        }
+//
+///*        if (appoiment.getAppoimentService() == null) {
+//            result.rejectValue("appoiment.service", "services.null", "deberia tener servicios asociados");
+//        }*/
+//
+//        if (!clientService.isFoundClient(appoiment.getClient().getId())) {
+//            errors.put("client.id", "no existe cliente con el id : " + appoiment.getClient().getId());
+//        }
+//
+//        result.getFieldErrors().forEach(err -> {
+//            errors.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
+//        });
+//
+//        return errors;
+//    }
 }
