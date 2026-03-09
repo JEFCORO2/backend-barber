@@ -1,10 +1,10 @@
 package com.jcoronel.api.rest.barber.backend_barber.dto;
 
 public class ServiceItemDto {
-    private Long id;
+    private Integer id;
     private Integer amount;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

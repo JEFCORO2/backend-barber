@@ -4,6 +4,6 @@ import com.jcoronel.api.rest.barber.backend_barber.entities.ApsEntity;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface AppoimentServiceRepository extends CrudRepository<ApsEntity, Long>{
+public interface AppoimentServiceRepository extends CrudRepository<ApsEntity, Integer>{
 
 }

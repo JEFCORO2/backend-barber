@@ -15,15 +15,37 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ServiceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleException(ServiceNotFoundException e){
+    @ExceptionHandler(MonthCurrentException.class)
+    public ResponseEntity<ErrorResponse> handleException(MonthCurrentException e){
         Map<String, String> errors = new HashMap<String,String>();
 
-        String fieldName = "services";
+        String fieldName = "month";
         String errorMessage = e.getMessage();
         errors.put(fieldName, errorMessage);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(errors));
+    }
+
+    @ExceptionHandler(ScheduleAtentionException.class)
+    public ResponseEntity<ErrorResponse> handleException(ScheduleAtentionException e){
+        Map<String, String> errors = new HashMap<String,String>();
+
+        String fieldName = "time";
+        String errorMessage = e.getMessage();
+        errors.put(fieldName, errorMessage);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(errors));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleException(ResourceNotFoundException e){
+        Map<String, String> errors = new HashMap<String,String>();
+
+        String fieldName = e.getResourceName().toLowerCase();
+        String errorMessage = e.getMessage();
+        errors.put(fieldName, errorMessage);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(errors));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

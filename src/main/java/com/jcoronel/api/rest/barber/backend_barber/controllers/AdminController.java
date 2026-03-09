@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("api/admin")
 public class AdminController {
 
-
     @Autowired
     private LocationService locationService;
 
@@ -33,12 +32,11 @@ public class AdminController {
         return ResponseEntity.ok().body(abierto);
     }
 
-    @GetMapping("/locals")
-    public ResponseEntity<ApiResponse<Location>> findAllLocation() {
-
-        List<Location> locations = locationService.findAll();
-        ApiResponse<Location> response = new ApiResponse<>(HttpStatus.ACCEPTED.value(), "Enviado correctamente", locations);
-        return ResponseEntity.ok().body(response);
-    }
-    
+//    @GetMapping("/locals")
+//    public ResponseEntity<ApiResponse<Location>> findAllLocation() {
+//
+//        List<Location> locations = locationService.findAll();
+//        ApiResponse<Location> response = new ApiResponse<>(HttpStatus.ACCEPTED.value(), "Enviado correctamente", locations);
+//        return ResponseEntity.ok().body(response);
+//    }
 }

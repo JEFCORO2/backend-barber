@@ -33,7 +33,11 @@ public class Client {
     @Size(min = 9)
     private String tel;
 
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "codigo")
+    private String codigo;
 
     public Client() {
     }
@@ -43,10 +47,12 @@ public class Client {
         this.lastname = lastname;
     }
 
-    public Client(String name, String lastname, String tel, String email) {
+    public Client(Integer id, String name, String lastname, String tel, String codigo, String email) {
+        this.id = id;
         this.name = name;
         this.lastname = lastname;
         this.tel = tel;
+        this.codigo = codigo;
         this.email = email;
     }
 
@@ -88,6 +94,14 @@ public class Client {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     @Override

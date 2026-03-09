@@ -17,7 +17,7 @@ public class ApsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "cita_id", referencedColumnName = "id", nullable = false)
@@ -44,11 +44,11 @@ public class ApsEntity {
         this.amount = amount;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

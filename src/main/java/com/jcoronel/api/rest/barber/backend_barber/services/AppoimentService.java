@@ -2,18 +2,14 @@ package com.jcoronel.api.rest.barber.backend_barber.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentCreateDto;
-import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentResponseDto;
-import com.jcoronel.api.rest.barber.backend_barber.dto.AppoimentUpdateDto;
-import com.jcoronel.api.rest.barber.backend_barber.entities.Appoiment;
+import com.jcoronel.api.rest.barber.backend_barber.dto.*;
 
 public interface AppoimentService {
-    List<Appoiment> findAll();
-    Appoiment saveAppoiment(Appoiment a);
-    AppoimentResponseDto saveAppoimentDto(AppoimentCreateDto a);
-    Optional<Appoiment> findByID(Long id);
-    Optional<Appoiment> update(Long id, AppoimentUpdateDto a);
+    List<AppoimentListDto> findAll();
+    AppoimentResponseDto saveAppoiment(AppoimentCreateDto a);
+    AppoimentResponseDto updateAppoiment(Long id, AppoimentUpdateDto a);
+    AppoimentDetailDto findByID(Long id);
     Boolean validarMesActual(LocalDateTime mesCita);
+    ApiResponse<Void> deleteAppoiment(Long id);
 }

@@ -19,14 +19,18 @@ public class AppoimentCreateDto {
     @NotNull
     private Integer clientId;
 
+    @NotNull
     private List<ServiceItemDto> services;
+
+    private Integer localId;
 
     public AppoimentCreateDto() {
     }
 
-    public AppoimentCreateDto(LocalDateTime date, Integer clientId, List<ServiceItemDto> services) {
+    public AppoimentCreateDto(LocalDateTime date, Integer clientId, Integer localId, List<ServiceItemDto> services) {
         this.date = date;
         this.clientId = clientId;
+        this.localId = localId;
         this.services = services;
     }
 
@@ -52,5 +56,13 @@ public class AppoimentCreateDto {
 
     public void setServices(List<ServiceItemDto> services) {
         this.services = services;
+    }
+
+    public Integer getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(Integer localId) {
+        this.localId = localId;
     }
 }

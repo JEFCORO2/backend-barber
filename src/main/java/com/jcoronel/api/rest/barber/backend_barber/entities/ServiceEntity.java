@@ -18,11 +18,11 @@ public class ServiceEntity {
     private String name;
 
     @Column(name = "precio")
-    private String price;
+    private Double price;
 
     public ServiceEntity() {}
 
-    public ServiceEntity(String name, String price) {
+    public ServiceEntity(String name, Double price) {
         this.name = name;
         this.price = price;
     }
@@ -43,11 +43,11 @@ public class ServiceEntity {
         this.name = name;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
